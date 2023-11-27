@@ -20,6 +20,9 @@ namespace BuildBuy {
         public readonly int[,] floorData;
         public readonly int[,] ceilingData;
 
+
+        private GameObject floorPlane;
+
         private List<GameObject> drawnObjects;
 
 
@@ -34,6 +37,12 @@ namespace BuildBuy {
             tileData =  new int[width, depth];
             floorData =  new int[width, depth];
             ceilingData =  new int[width, depth];
+            drawnObjects = new List<GameObject>();
+        }
+
+
+        public Vector2Int GridPosFromWorldPos(Vector3 worldPos) {
+            return new Vector2Int(Mathf.RoundToInt(worldPos.x - position.x), Mathf.RoundToInt(worldPos.z - position.z));
         }
 
 
@@ -42,12 +51,14 @@ namespace BuildBuy {
                 GameObject.Destroy(drawnObjects[i]);
             }
             drawnObjects.Clear();
+            // TODO: Delete the other parts
         }
 
 
         public void Redraw() {
             DeleteAllDrawn();
             DrawWalls();
+            // TODO: Draw the other parts
         }
 
 
@@ -79,6 +90,72 @@ namespace BuildBuy {
             box.transform.localPosition = new Vector3(x, heights.x + (heights.y * 0.5f), z);
             return box;
        }
+
+
+        public void AddComponent(Change change) {
+            if(change.operation == BuildOp.ADD) {
+                switch (change.type) {
+                    case BuildPiece.WALL:
+                        AddWall(change);
+                        break;
+                    case BuildPiece.FLOOR:
+                        //TODO
+                        break;
+                    case  BuildPiece.CEILING:
+                        //TODO
+                        break;
+                    default:
+                        //In case more BuildPiece types are added but I forget to include them here
+                        Debug.LogError("ERROR! FloorMap.AddComponent(Change) recieved unknown change");
+                        break;
+                        ChangeStack.Changes.Push(change);
+                }
+            } else { //TODO!!!
+                switch (change.type) {
+                    case BuildPiece.WALL:
+                        // TODO
+                        break;
+                    case BuildPiece.FLOOR:
+                        //TODO
+                        break;
+                    case  BuildPiece.CEILING:
+                        //TODO
+                        break;
+                    default:
+                        //In case more BuildPiece types are added but I forget to include them here
+                        Debug.LogError("ERROR! FloorMap.AddComponent(Change) recieved unknown change");
+                        break;
+                        ChangeStack.Changes.Push(change);
+                }
+            }
+            Redraw();
+        }
+
+
+
+        public void AddWall(Change change) {
+            if(change.start.x == change.end.x) { // Drawing along he Z axis
+                if(change.start.y < change.end.y) {
+                    for (int i = change.start.y; i < change.end.y; i++) {
+                        vWallData[change.start.x, i] = 1;
+                    }
+                } else {
+                    for (int i = change.end.y; i < change.start.y; i++) {
+                        vWallData[change.start.x, i] = 1;
+                    }
+                }
+            } else {
+                if(change.start.x < change.end.x) {
+                    for (int i = change.start.x; i < change.end.x; i++) {
+                        hWallData[i, change.start.y] = 1;
+                    }
+                } else {
+                    for (int i = change.end.x; i < change.start.x; i++) {
+                        hWallData[i, change.start.y] = 1;
+                    }
+                }
+            }
+        }
 
 
 

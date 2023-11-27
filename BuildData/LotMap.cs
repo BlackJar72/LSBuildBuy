@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace BuildBuy {
 
-    public class LotMap {
+    [System.Serializable]
+    public class LotMap  {
         private List<FloorMap> stories;
 
-        private Vector3 location;
-        private int width, depth;
-
+        [SerializeField] public Vector3 location;
+        [SerializeField] public int width;
+        [SerializeField] public int depth;
 
         public List<FloorMap> Stories => stories;
 
@@ -19,6 +20,35 @@ namespace BuildBuy {
             location = position;
             width = xsize;
             depth = zsize;
+            AddStory();
+        }
+
+
+        public Vector2Int GridPosFromWorldPos(Vector3 worldPos) {
+            return new Vector2Int(Mathf.RoundToInt(worldPos.x - location.x), Mathf.RoundToInt(worldPos.z - location.z));
+        }
+
+
+        public bool IsInMap(Vector3 worldPos) {
+            Vector2Int p = GridPosFromWorldPos(worldPos);
+            return ((p.x > -1) && (p.x < width) && (p.y > -1) && (p.y < depth));
+        }
+
+
+        public bool IsInMap(Vector2Int p) => ((p.x > -1) && (p.x < width) && (p.y < -1) && (p.y < depth));
+
+
+        public void AddStory(float height = 3) {
+            int level = stories.Count;
+            FloorMap map;
+            if(level == 0) {
+                map = new FloorMap(location, width, depth, location.y, height);
+            } else {
+                FloorMap last = Stories[Stories.Count - 1];
+                float altitude = last.heights.x + last.heights.y;
+                map = new FloorMap(location, width, depth, altitude, height);
+            }
+            Stories.Add(map);
         }
 
     }

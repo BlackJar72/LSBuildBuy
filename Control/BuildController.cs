@@ -65,10 +65,7 @@ namespace BuildBuy {
         }
 
 
-        /// <summary>
-        /// FUCK OF THE FUCK OF THE BUTFUCKED FUCK!!!
-        /// </summary>
-            // FUCK OF THE FUCK OF THE BUTTFUCKED FUCK!!!
+
         private void MoveAALign() {
             pointedAt = modeSwitch.CurrentMode.GetCursorLocation();
             beActive = (pointedAt != null);

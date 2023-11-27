@@ -7,7 +7,8 @@ namespace BuildBuy {
     public class WallDrawer : MonoBehaviour {
         public Vector3 start;
         public Vector3 end;
-        public LotMap lot;
+        public Lot lot;
+        public LotMap lotMap;
         public int story;
 
         [SerializeField] GameObject visualizer;
@@ -23,6 +24,7 @@ namespace BuildBuy {
 
 
         void OnEnable() {
+            lotMap = lot.buildMap;
             ACameraControl.LeftMouseUp += EndDrawing;
             ACameraControl.LeftMouseDown += StartDraw;
             ACameraControl.LeftMouseClick += CancelDraw;
@@ -40,7 +42,7 @@ namespace BuildBuy {
 
         public void PlaceAtLocation(Transform location, LotMap lot, int story) {
             this.story = story;
-            this.lot = lot;
+            this.lotMap = lot;
             visualizer.transform.position = transform.position = start = end = location.position;
             visualizer.transform.rotation = transform.rotation = Quaternion.identity;
             visualizer.transform.localScale .Set(thickness, lot.Stories[story].heights.y, thickness); // FIXME
@@ -58,12 +60,18 @@ namespace BuildBuy {
         }
 
 
+        public Vector3 RoundV3(Vector3 vector) {
+            return new Vector3(Mathf.RoundToInt(vector.x), Mathf.RoundToInt(vector.y), Mathf.RoundToInt(vector.z));
+        }
+
+
         public void StartDraw(RaycastHit hit) {
-            //Debug.Log("StartDraw");
-            drawing = true;
-            startPoint = hit.point.RoundToInt();
-            selectedObject = controller.CameraController.GetCursorObject();
-            controller.SetAAlignMode(true, startPoint);
+            if(lotMap.IsInMap(hit.point.RoundToInt())) {
+                drawing = true;
+                startPoint = RoundV3(hit.point);
+                selectedObject = controller.CameraController.GetCursorObject();
+                controller.SetAAlignMode(true, startPoint);
+            }
         }
 
 
@@ -77,17 +85,34 @@ namespace BuildBuy {
 
 
         public void EndDrawing(RaycastHit hit) {
-            //Debug.Log("EndDrawing");
-            if (drawing) {
+            if (drawing && lotMap.IsInMap(visualizer.transform.position)) {
                 endPoint = visualizer.transform.position;
-                Vector2Int starting = new Vector2Int((int)startPoint.x, (int)startPoint.z);
-                Vector2Int ending = new Vector2Int((int)endPoint.x, (int)endPoint.z);
+                Vector2Int starting = lotMap.GridPosFromWorldPos(startPoint);
+                Vector2Int ending = lotMap.GridPosFromWorldPos(endPoint);
                 Change change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, story);
                 Debug.Log(change.ToString());
+                lotMap.Stories[story].AddComponent(change);
             }
             drawing = false;
             controller.SetAAlignMode(false, endPoint);
         }
+
+
+        // FIXME: Does nothing (probably undone elsewhere)
+        public void ShowVisualizer() {
+            Cursor.visible = false;
+            visualizer.SetActive(true);
+        }
+
+
+        // FIXME: Does nothing (probably undone elsewhere)
+        public void HideVisualizer() {
+            Cursor.visible = true;
+            visualizer.SetActive(false);
+        }
+
+
+
 
 
     }
