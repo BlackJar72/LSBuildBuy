@@ -14,12 +14,14 @@ namespace BuildBuy {
 
         public List<FloorMap> Stories => stories;
 
+        private Lot lot;
 
-        public LotMap(Vector3 position, int xsize, int zsize) {
+        public LotMap(Vector3 position, int xsize, int zsize, Lot parent) {
             stories = new List<FloorMap>();
             location = position;
             width = xsize;
             depth = zsize;
+            lot = parent;
             AddStory();
         }
 
@@ -42,11 +44,11 @@ namespace BuildBuy {
             int level = stories.Count;
             FloorMap map;
             if(level == 0) {
-                map = new FloorMap(location, width, depth, location.y, height);
+                map = new FloorMap(location, width, depth, location.y, height, lot);
             } else {
                 FloorMap last = Stories[Stories.Count - 1];
                 float altitude = last.heights.x + last.heights.y;
-                map = new FloorMap(location, width, depth, altitude, height);
+                map = new FloorMap(location, width, depth, altitude, height, lot);
             }
             Stories.Add(map);
         }

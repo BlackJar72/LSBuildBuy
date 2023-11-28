@@ -20,13 +20,14 @@ namespace BuildBuy {
         public readonly int[,] floorData;
         public readonly int[,] ceilingData;
 
-
-        private GameObject floorPlane;
-
         private List<GameObject> drawnObjects;
 
+        private Lot lot;
 
-        public FloorMap(Vector3 location, int width, int depth, float altitude, float height) {
+        private GameObject mapContainer;
+
+
+        public FloorMap(Vector3 location, int width, int depth, float altitude, float height, Lot parent) {
             position = location;
             lotSize = new Vector2Int(width, depth);
             lotSizeP1 = new Vector2Int(width + 1, depth + 1);
@@ -38,6 +39,11 @@ namespace BuildBuy {
             floorData =  new int[width, depth];
             ceilingData =  new int[width, depth];
             drawnObjects = new List<GameObject>();
+            lot = parent;
+            mapContainer = new GameObject();
+            mapContainer.transform.parent = lot.transform;
+            mapContainer.transform.localPosition = Vector3.zero;
+            mapContainer.name = "Architecture";
         }
 
 
@@ -88,6 +94,8 @@ namespace BuildBuy {
             GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
             box.transform.localScale = new Vector3(width, heights.y, length);
             box.transform.localPosition = new Vector3(x, heights.x + (heights.y * 0.5f), z);
+            box.transform.parent = mapContainer.transform;
+            box.name = "Wall Segment";
             return box;
        }
 

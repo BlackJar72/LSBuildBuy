@@ -14,6 +14,7 @@ namespace BuildBuy {
         [SerializeField] GameObject visualizer;
         [SerializeField] Pencil visualFlipper;
         [SerializeField] BuildController controller;
+
         [SerializeField] LayerMask groundMask;
 
         const float thickness = 0.1f;
@@ -37,6 +38,7 @@ namespace BuildBuy {
 
         void OnEnable() {
             lotMap = lot.buildMap;
+            groundMask = lot.GroudMask;
             ACameraControl.LeftMouseUp += EndDrawing;
             ACameraControl.LeftMouseDown += StartDraw;
             ACameraControl.LeftMouseClick += CancelDraw;
