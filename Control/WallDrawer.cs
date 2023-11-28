@@ -12,6 +12,7 @@ namespace BuildBuy {
         public int story;
 
         [SerializeField] GameObject visualizer;
+        [SerializeField] Pencil visualFlipper;
         [SerializeField] BuildController controller;
         [SerializeField] LayerMask groundMask;
 
@@ -21,6 +22,8 @@ namespace BuildBuy {
         public bool drawing = false;
         private Vector3 startPoint, endPoint;
         private GameObject selectedObject;
+
+        public bool eraseMode;
 
 
         void OnEnable() {
@@ -37,6 +40,13 @@ namespace BuildBuy {
             ACameraControl.LeftMouseDown -= StartDraw;
             ACameraControl.LeftMouseClick -= CancelDraw;
             controller.CameraController.ResetLayerMask();
+        }
+
+
+        void Update() {
+            if(Input.GetKeyUp(KeyCode.T)) {
+                ModeSwitch();
+            }
         }
 
 
@@ -89,7 +99,12 @@ namespace BuildBuy {
                 endPoint = visualizer.transform.position;
                 Vector2Int starting = lotMap.GridPosFromWorldPos(startPoint);
                 Vector2Int ending = lotMap.GridPosFromWorldPos(endPoint);
-                Change change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, story);
+                Change change;
+                if(eraseMode) {
+                    change = new Change(BuildPiece.WALL, BuildOp.REMOVE, 0, starting, ending, story);
+                } else {
+                    change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, story);
+                }
                 Debug.Log(change.ToString());
                 lotMap.Stories[story].AddComponent(change);
             }
@@ -109,6 +124,13 @@ namespace BuildBuy {
         public void HideVisualizer() {
             Cursor.visible = true;
             visualizer.SetActive(false);
+        }
+
+
+        public void ModeSwitch() {
+            if(visualFlipper.Flip()) {
+                eraseMode = !eraseMode;
+            }
         }
 
 

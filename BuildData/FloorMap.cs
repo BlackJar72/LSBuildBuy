@@ -113,7 +113,7 @@ namespace BuildBuy {
             } else { //TODO!!!
                 switch (change.type) {
                     case BuildPiece.WALL:
-                        // TODO
+                        RemoveWall(change);
                         break;
                     case BuildPiece.FLOOR:
                         //TODO
@@ -152,6 +152,32 @@ namespace BuildBuy {
                 } else {
                     for (int i = change.end.x; i < change.start.x; i++) {
                         hWallData[i, change.start.y] = 1;
+                    }
+                }
+            }
+        }
+
+
+
+        public void RemoveWall(Change change) {
+            if(change.start.x == change.end.x) { // Drawing along he Z axis
+                if(change.start.y < change.end.y) {
+                    for (int i = change.start.y; i < change.end.y; i++) {
+                        vWallData[change.start.x, i] = 0;
+                    }
+                } else {
+                    for (int i = change.end.y; i < change.start.y; i++) {
+                        vWallData[change.start.x, i] = 0;
+                    }
+                }
+            } else {
+                if(change.start.x < change.end.x) {
+                    for (int i = change.start.x; i < change.end.x; i++) {
+                        hWallData[i, change.start.y] = 0;
+                    }
+                } else {
+                    for (int i = change.end.x; i < change.start.x; i++) {
+                        hWallData[i, change.start.y] = 0;
                     }
                 }
             }
