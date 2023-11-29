@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 
@@ -33,7 +34,6 @@ namespace BuildBuy {
         void Start() {
             buildPlane = GameObject.Instantiate(lotPlane, transform);
             buildPlane.transform.localScale = new Vector3(0.1f * width, 1.0f, 0.1f * depth);
-            buildPlane.layer = groundMask;
             buildPlane.transform.parent = gridContainer.transform;
             MakeGrid();
         }
@@ -44,7 +44,7 @@ namespace BuildBuy {
             for(int i = 0; i < width - 1; i++)
                 for(int j = 0; j < depth - 1; j++) {
                     grid[i,j] = GameObject.Instantiate(gridSquare, gridContainer.transform);
-                    grid[i,j].transform.localPosition = new Vector3(i - (width / 2) + 0.5f, 0.001f, j - (depth / 2) + 0.5f);
+                    grid[i,j].transform.localPosition = new Vector3(i - (width / 2) + 0.5f, 0.0015f, j - (depth / 2) + 0.5f);
                 }
         }
 

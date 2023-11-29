@@ -64,6 +64,7 @@ namespace BuildBuy {
         public void Redraw() {
             DeleteAllDrawn();
             DrawWalls();
+            DrawFloors();
             // TODO: Draw the other parts
         }
 
@@ -74,7 +75,7 @@ namespace BuildBuy {
                 for(int j = 0; j < lotSize.y; j++) {
                     //For now, don't worry about extra value (what was I going to do with them anyway?!?)
                     if(vWallData[i,j] > 0) {
-                        drawnObjects.Add(BuildBox(((float)i * SCALE) + position.x,
+                        drawnObjects.Add(BuildWallSegment(((float)i * SCALE) + position.x,
                                 (((float)j + 0.5f) * SCALE) + position.z, THICKNESS, SCALE));
                     }
                 }
@@ -83,14 +84,25 @@ namespace BuildBuy {
                 for(int j = 0; j < lotSizeP1.y; j++) {
                     //For now, don't worry about extra value (what was I going to do with them anyway?!?)
                     if(hWallData[i,j] > 0) {
-                        drawnObjects.Add(BuildBox((((float)i + 0.5f) * SCALE) + position.x,
+                        drawnObjects.Add(BuildWallSegment((((float)i + 0.5f) * SCALE) + position.x,
                                 ((float)j * SCALE) + position.z, SCALE, THICKNESS));
                     }
                 }
         }
 
 
-        public GameObject BuildBox(float x, float z, float width, float length) {
+        public void DrawFloors() {
+            for(int i = 0; i < lotSize.x; i++)
+                for(int j = 0; j < lotSize.y; j++) {
+                    if(floorData[i,j] > 0) {
+                        drawnObjects.Add(BuildFloorSection(((float)i + 0.5f) * SCALE + position.x,
+                                (((float)j + 0.5f) * SCALE + position.z), SCALE, SCALE));
+                    }
+                }
+        }
+
+
+        public GameObject BuildWallSegment(float x, float z, float width, float length) {
             GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
             box.transform.localScale = new Vector3(width, heights.y, length);
             box.transform.localPosition = new Vector3(x, heights.x + (heights.y * 0.5f), z);
@@ -100,6 +112,16 @@ namespace BuildBuy {
        }
 
 
+        public GameObject BuildFloorSection(float x, float z, float width, float length) {
+            GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            box.transform.localScale = new Vector3(width, 0.1f, length);
+            box.transform.localPosition = new Vector3(x, heights.x - 0.049f, z);
+            box.transform.parent = mapContainer.transform;
+            box.name = "Floor Section";
+            return box;
+        }
+
+
         public void AddComponent(Change change) {
             if(change.operation == BuildOp.ADD) {
                 switch (change.type) {
@@ -107,7 +129,7 @@ namespace BuildBuy {
                         AddWall(change);
                         break;
                     case BuildPiece.FLOOR:
-                        //TODO
+                        AddFloor(change);
                         break;
                     case  BuildPiece.CEILING:
                         //TODO
@@ -124,7 +146,7 @@ namespace BuildBuy {
                         RemoveWall(change);
                         break;
                     case BuildPiece.FLOOR:
-                        //TODO
+                        RemoveFloor(change);
                         break;
                     case  BuildPiece.CEILING:
                         //TODO
@@ -187,6 +209,64 @@ namespace BuildBuy {
                     for (int i = change.end.x; i < change.start.x; i++) {
                         hWallData[i, change.start.y] = 0;
                     }
+                }
+            }
+        }
+
+
+        public void AddFloor(Change change) {
+            if(change.start.x < change.end.x) {
+                if(change.start.y < change.end.y) {
+                    for(int i = change.start.x; i < change.end.x; i++)
+                        for(int j = change.start.y; j < change.end.y; j++) {
+                            floorData[i,j] = 1;
+                        }
+                } else {
+                    for(int i = change.start.x; i < change.end.x; i++)
+                        for(int j = change.end.y; j < change.start.y; j++) {
+                            floorData[i,j] = 1;
+                        }
+                }
+            } else {
+                if(change.start.y < change.end.y) {
+                    for(int i = change.end.x; i < change.start.x; i++)
+                        for(int j = change.start.y; j < change.end.y; j++) {
+                            floorData[i,j] = 1;
+                        }
+                } else {
+                    for(int i = change.end.x; i < change.start.x; i++)
+                        for(int j = change.end.y; j < change.start.y; j++) {
+                            floorData[i,j] = 1;
+                        }
+                }
+            }
+        }
+
+
+        public void RemoveFloor(Change change) {
+            if(change.start.x < change.end.x) {
+                if(change.start.y < change.end.y) {
+                    for(int i = change.start.x; i < change.end.x; i++)
+                        for(int j = change.start.y; j < change.end.y; j++) {
+                            floorData[i,j] = 0;
+                        }
+                } else {
+                    for(int i = change.start.x; i < change.end.x; i++)
+                        for(int j = change.end.y; j < change.start.y; j++) {
+                            floorData[i,j] = 0;
+                        }
+                }
+            } else {
+                if(change.start.y < change.end.y) {
+                    for(int i = change.end.x; i < change.start.x; i++)
+                        for(int j = change.start.y; j < change.end.y; j++) {
+                            floorData[i,j] = 0;
+                        }
+                } else {
+                    for(int i = change.end.x; i < change.start.x; i++)
+                        for(int j = change.end.y; j < change.start.y; j++) {
+                            floorData[i,j] = 0;
+                        }
                 }
             }
         }

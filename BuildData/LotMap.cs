@@ -26,8 +26,9 @@ namespace BuildBuy {
         }
 
 
-        public Vector2Int GridPosFromWorldPos(Vector3 worldPos) {
-            return new Vector2Int(Mathf.RoundToInt(worldPos.x - location.x), Mathf.RoundToInt(worldPos.z - location.z));
+        public Vector2Int GridPosFromWorldPos(Vector3 worldPos, int adjustment = 0) {
+            return new Vector2Int(Mathf.RoundToInt(worldPos.x - location.x + adjustment),
+                    Mathf.RoundToInt(worldPos.z - location.z + adjustment));
         }
 
 

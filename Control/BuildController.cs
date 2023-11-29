@@ -61,7 +61,6 @@ namespace BuildBuy {
             }
             if (beActive != wasActive) visualRepresentation.SetActive(beActive);
             wasActive = beActive;
-
         }
 
 
