@@ -24,6 +24,16 @@ namespace BuildBuy {
 
         private Lot lot;
 
+        /**************************************************************************************************************/
+        //                                                                                                            //
+        // These game objects are good for organization, but setting them innactive is not a good way to hide objects //
+        // one floors that should not bee seen since that would inactivate the scripts as well, turning off all games //
+        // logic as though they were not there.  Instead, all game objects that need hiding need to have a special    //
+        // hide function that deactivate only the mesh renderer (or skinned mesh renders) so as to make them invisible//
+        // while still active in the scene.                                                                           //
+        //                                                                                                            //
+        /**************************************************************************************************************/
+
         private int level;
         private GameObject storyContainer;
         private GameObject mapContainer;
