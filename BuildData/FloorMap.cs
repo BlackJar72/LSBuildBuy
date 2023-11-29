@@ -24,10 +24,18 @@ namespace BuildBuy {
 
         private Lot lot;
 
+        private int level;
+        private GameObject storyContainer;
         private GameObject mapContainer;
+        private GameObject walls;
+        private GameObject floors;
+        private GameObject ceilings;
+        private GameObject miscellaneous;
+        private GameObject furniture;
+        private GameObject characters;
 
 
-        public FloorMap(Vector3 location, int width, int depth, float altitude, float height, Lot parent) {
+        public FloorMap(Vector3 location, int width, int depth, float altitude, float height, Lot parent, int story) {
             position = location;
             lotSize = new Vector2Int(width, depth);
             lotSizeP1 = new Vector2Int(width + 1, depth + 1);
@@ -40,10 +48,56 @@ namespace BuildBuy {
             ceilingData =  new int[width, depth];
             drawnObjects = new List<GameObject>();
             lot = parent;
+            level = story;
+
+            storyContainer = new GameObject();
+            storyContainer.transform.parent = lot.transform;
+            storyContainer.transform.localPosition = Vector3.zero;
+            storyContainer.name = "Level " + level;
+
             mapContainer = new GameObject();
-            mapContainer.transform.parent = lot.transform;
+            mapContainer.transform.parent = storyContainer.transform;
             mapContainer.transform.localPosition = Vector3.zero;
             mapContainer.name = "Architecture";
+
+            walls = new GameObject();
+            walls.transform.parent = mapContainer.transform;
+            walls.transform.localPosition = Vector3.zero;
+            walls.name = "Walls";
+
+            floors = new GameObject();
+            floors.transform.parent = mapContainer.transform;
+            floors.transform.localPosition = Vector3.zero;
+            floors.name = "Floors";
+
+            ceilings = new GameObject();
+            ceilings.transform.parent = mapContainer.transform;
+            ceilings.transform.localPosition = Vector3.zero;
+            ceilings.name = "Ceilings";
+
+            miscellaneous = new GameObject();
+            miscellaneous.transform.parent = mapContainer.transform;
+            miscellaneous.transform.localPosition = Vector3.zero;
+            miscellaneous.name = "Miscellaneous";
+
+            furniture = new GameObject();
+            furniture.transform.parent = storyContainer.transform;
+            furniture.transform.localPosition = Vector3.zero;
+            furniture.name = "Furniture";
+
+            characters = new GameObject();
+            characters.transform.parent = storyContainer.transform;
+            characters.transform.localPosition = Vector3.zero;
+            characters.name = "Characters";
+        }
+
+
+        /// <summary>
+        /// This is to hide or show the level when moving up and down
+        /// </summary>
+        /// <param name="show"></param>
+        public void ShowLayer(bool show) {
+            storyContainer.SetActive(show);
         }
 
 
@@ -106,7 +160,7 @@ namespace BuildBuy {
             GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
             box.transform.localScale = new Vector3(width, heights.y, length);
             box.transform.localPosition = new Vector3(x, heights.x + (heights.y * 0.5f), z);
-            box.transform.parent = mapContainer.transform;
+            box.transform.parent = walls.transform;
             box.name = "Wall Segment";
             return box;
        }
@@ -116,7 +170,7 @@ namespace BuildBuy {
             GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
             box.transform.localScale = new Vector3(width, 0.1f, length);
             box.transform.localPosition = new Vector3(x, heights.x - 0.049f, z);
-            box.transform.parent = mapContainer.transform;
+            box.transform.parent = floors.transform;
             box.name = "Floor Section";
             return box;
         }
@@ -126,10 +180,10 @@ namespace BuildBuy {
             if(change.operation == BuildOp.ADD) {
                 switch (change.type) {
                     case BuildPiece.WALL:
-                        AddWall(change);
+                        SetWall(change, 1);
                         break;
                     case BuildPiece.FLOOR:
-                        AddFloor(change);
+                        SetFloor(change, 1);
                         break;
                     case  BuildPiece.CEILING:
                         //TODO
@@ -143,10 +197,10 @@ namespace BuildBuy {
             } else { //TODO!!!
                 switch (change.type) {
                     case BuildPiece.WALL:
-                        RemoveWall(change);
+                        SetWall(change, 0);
                         break;
                     case BuildPiece.FLOOR:
-                        RemoveFloor(change);
+                        SetFloor(change, 0);
                         break;
                     case  BuildPiece.CEILING:
                         //TODO
@@ -163,109 +217,54 @@ namespace BuildBuy {
 
 
 
-        public void AddWall(Change change) {
+        private void SetWall(Change change, int value) {
             if(change.start.x == change.end.x) { // Drawing along he Z axis
                 if(change.start.y < change.end.y) {
                     for (int i = change.start.y; i < change.end.y; i++) {
-                        vWallData[change.start.x, i] = 1;
+                        vWallData[change.start.x, i] = value;
                     }
                 } else {
                     for (int i = change.end.y; i < change.start.y; i++) {
-                        vWallData[change.start.x, i] = 1;
+                        vWallData[change.start.x, i] = value;
                     }
                 }
             } else {
                 if(change.start.x < change.end.x) {
                     for (int i = change.start.x; i < change.end.x; i++) {
-                        hWallData[i, change.start.y] = 1;
+                        hWallData[i, change.start.y] = value;
                     }
                 } else {
                     for (int i = change.end.x; i < change.start.x; i++) {
-                        hWallData[i, change.start.y] = 1;
+                        hWallData[i, change.start.y] = value;
                     }
                 }
             }
         }
 
 
-
-        public void RemoveWall(Change change) {
-            if(change.start.x == change.end.x) { // Drawing along he Z axis
-                if(change.start.y < change.end.y) {
-                    for (int i = change.start.y; i < change.end.y; i++) {
-                        vWallData[change.start.x, i] = 0;
-                    }
-                } else {
-                    for (int i = change.end.y; i < change.start.y; i++) {
-                        vWallData[change.start.x, i] = 0;
-                    }
-                }
-            } else {
-                if(change.start.x < change.end.x) {
-                    for (int i = change.start.x; i < change.end.x; i++) {
-                        hWallData[i, change.start.y] = 0;
-                    }
-                } else {
-                    for (int i = change.end.x; i < change.start.x; i++) {
-                        hWallData[i, change.start.y] = 0;
-                    }
-                }
-            }
-        }
-
-
-        public void AddFloor(Change change) {
+        private void SetFloor(Change change, int value) {
             if(change.start.x < change.end.x) {
                 if(change.start.y < change.end.y) {
                     for(int i = change.start.x; i < change.end.x; i++)
                         for(int j = change.start.y; j < change.end.y; j++) {
-                            floorData[i,j] = 1;
+                            floorData[i,j] = value;
                         }
                 } else {
                     for(int i = change.start.x; i < change.end.x; i++)
                         for(int j = change.end.y; j < change.start.y; j++) {
-                            floorData[i,j] = 1;
+                            floorData[i,j] = value;
                         }
                 }
             } else {
                 if(change.start.y < change.end.y) {
                     for(int i = change.end.x; i < change.start.x; i++)
                         for(int j = change.start.y; j < change.end.y; j++) {
-                            floorData[i,j] = 1;
+                            floorData[i,j] = value;
                         }
                 } else {
                     for(int i = change.end.x; i < change.start.x; i++)
                         for(int j = change.end.y; j < change.start.y; j++) {
-                            floorData[i,j] = 1;
-                        }
-                }
-            }
-        }
-
-
-        public void RemoveFloor(Change change) {
-            if(change.start.x < change.end.x) {
-                if(change.start.y < change.end.y) {
-                    for(int i = change.start.x; i < change.end.x; i++)
-                        for(int j = change.start.y; j < change.end.y; j++) {
-                            floorData[i,j] = 0;
-                        }
-                } else {
-                    for(int i = change.start.x; i < change.end.x; i++)
-                        for(int j = change.end.y; j < change.start.y; j++) {
-                            floorData[i,j] = 0;
-                        }
-                }
-            } else {
-                if(change.start.y < change.end.y) {
-                    for(int i = change.end.x; i < change.start.x; i++)
-                        for(int j = change.start.y; j < change.end.y; j++) {
-                            floorData[i,j] = 0;
-                        }
-                } else {
-                    for(int i = change.end.x; i < change.start.x; i++)
-                        for(int j = change.end.y; j < change.start.y; j++) {
-                            floorData[i,j] = 0;
+                            floorData[i,j] = value;
                         }
                 }
             }

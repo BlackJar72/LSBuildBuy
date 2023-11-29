@@ -223,7 +223,7 @@ namespace BuildBuy {
                     } else {
                         change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.story);
                     }
-                    Debug.Log(change.ToString());
+                    //Debug.Log(change.ToString());
                     p.lotMap.Stories[p.story].AddComponent(change);
                 }
                 p.drawing = false;
@@ -259,7 +259,7 @@ namespace BuildBuy {
                 } else {
                     change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.story);
                 }
-                Debug.Log(change.ToString());
+                //Debug.Log(change.ToString());
                 p.lotMap.Stories[p.story].AddComponent(change);
             }
         }
@@ -277,7 +277,7 @@ namespace BuildBuy {
                     } else {
                         change = new Change(BuildPiece.FLOOR, BuildOp.ADD, 0, starting, ending, p.story);
                     }
-                    Debug.Log(change.ToString());
+                    //Debug.Log(change.ToString());
                     p.lotMap.Stories[p.story].AddComponent(change);
                 }
                 p.drawing = false;

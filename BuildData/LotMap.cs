@@ -45,11 +45,11 @@ namespace BuildBuy {
             int level = stories.Count;
             FloorMap map;
             if(level == 0) {
-                map = new FloorMap(location, width, depth, location.y, height, lot);
+                map = new FloorMap(location, width, depth, location.y, height, lot, 1);
             } else {
                 FloorMap last = Stories[Stories.Count - 1];
                 float altitude = last.heights.x + last.heights.y;
-                map = new FloorMap(location, width, depth, altitude, height, lot);
+                map = new FloorMap(location, width, depth, altitude, height, lot, Stories.Count);
             }
             Stories.Add(map);
         }
