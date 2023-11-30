@@ -18,6 +18,7 @@ namespace BuildBuy {
         private GameObject gridContainer;
 
         public LayerMask GroudMask => groundMask;
+        public bool shortWallView = false;
 
         void Awake() {
             Vector3 location = transform.position;

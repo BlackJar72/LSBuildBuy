@@ -14,7 +14,7 @@ namespace BuildBuy {
     }
 
 
-    [CreateAssetMenu(menuName = "BuildBuy/Build Item", fileName = "BuildItem", order = 101)]
+    [CreateAssetMenu(menuName = "Build Buy/Build Item", fileName = "BuildItem", order = 201)]
     public class BuildItem : ScriptableObject {
         [SerializeField] private int id;
         [SerializeField] private BuildItemType type;

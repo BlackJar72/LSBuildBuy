@@ -31,7 +31,7 @@ namespace BuildBuy {
     /// created in the editor.  There should really normally be only one of these, attatched to a and called by
     /// a loading manager in the start scene, from which is should be run once.
     ///
-    [CreateAssetMenu(menuName = "BuildBuy/Build Item Registry", fileName = "BuildItemRegistry", order = 110)]
+    [CreateAssetMenu(menuName = "Build Buy/Build Item Registry", fileName = "BuildItemRegistry", order = 210)]
     public class BuildItemRegistry : ScriptableObject {
         [SerializeField] List<BuildItem> walls;
         [SerializeField] List<BuildItem> corners;

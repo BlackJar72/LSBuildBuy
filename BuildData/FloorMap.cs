@@ -7,6 +7,8 @@ namespace BuildBuy {
     public class FloorMap {
         private const float SCALE = 1f;       // This might become a variable later, so including now
         private const float THICKNESS = 0.1f; // This might become a variable later, so including now
+        private static readonly Vector3 fullWallScale  = new Vector3(1.0f, 1.0f, 1.0f);
+        private static readonly Vector3 shortWallScale = new Vector3(1.0f, 0.1f, 1.0f);
 
         public readonly Vector3 position;
         public readonly Vector2Int lotSize;
@@ -31,6 +33,9 @@ namespace BuildBuy {
         // logic as though they were not there.  Instead, all game objects that need hiding need to have a special    //
         // hide function that deactivate only the mesh renderer (or skinned mesh renders) so as to make them invisible//
         // while still active in the scene.                                                                           //
+        //                                                                                                            //
+        // Also, characters will need to be handled separately and differently from stationary objects, as they can   //
+        // move between levels and thus must be handled as part of there own update or through similar means.         //
         //                                                                                                            //
         /**************************************************************************************************************/
 
@@ -103,11 +108,38 @@ namespace BuildBuy {
 
 
         /// <summary>
+        /// This is to be called whenever this floor is shifted too or otherway made visible, by the calling script;
+        /// as this is not a game object it will never be called by the engine!
+        /// </summary>
+        /// <param name="show"></param>
+        public void OnEnable() {
+            SetWallViewMode();
+            ShowLevel(true);
+        }
+
+
+        /// <summary>
+        /// This is to be called whenever this floor is made invisible, by the calling script; as this is not a
+        /// a game object it will never be called by the engine!
+        /// </summary>
+        /// <param name="show"></param>
+        public void OnDisable() {
+            ShowLevel(false);
+        }
+
+
+        /// <summary>
         /// This is to hide or show the level when moving up and down
         /// </summary>
         /// <param name="show"></param>
-        public void ShowLayer(bool show) {
-            storyContainer.SetActive(show);
+        public void ShowLevel(bool show) {
+            // TODO: Unseen game objects need to have their renderers inactivated, not everything!!!
+        }
+
+
+        public void SetWallViewMode() {
+            if(lot.shortWallView) walls.transform.localScale = shortWallScale;
+            else walls.transform.localScale = fullWallScale;
         }
 
 

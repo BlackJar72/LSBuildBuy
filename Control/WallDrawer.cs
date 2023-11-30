@@ -57,7 +57,7 @@ namespace BuildBuy {
 
         void Update() {
             if(Input.GetKeyUp(KeyCode.T)) {
-                ModeSwitch();
+                ToggleEraseMode();
             }
             if(Input.GetKeyUp(KeyCode.F)) {
                 currentDraw = (currentDraw + 1) % draws.Length;
@@ -120,10 +120,20 @@ namespace BuildBuy {
         }
 
 
-        public void ModeSwitch() {
+        public void ToggleEraseMode() {
             if(visualFlipper.Flip()) {
                 eraseMode = !eraseMode;
             }
+        }
+
+
+        public void SetBuildMode(int mode) {
+            currentDraw = mode;
+        }
+
+
+        public void SetEraseMode(bool mode) {
+            eraseMode = mode;
         }
 
 
