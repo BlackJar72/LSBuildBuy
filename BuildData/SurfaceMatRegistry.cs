@@ -4,7 +4,7 @@ using UnityEngine;
 namespace BuildBuy {
 
 
-    [CreateAssetMenu(menuName = "Build Buy/Build Material", fileName = "BuildMaterial", order = 102)]
+    [CreateAssetMenu(menuName = "Build Buy/Material Registry List", fileName = "MaterialList", order = 102)]
     public class SurfaceMatRegistry : ScriptableObject {
         [SerializeField] List<BuildMaterial> wallMaterials;
         [SerializeField] List<BuildMaterial> floorMaterials;
