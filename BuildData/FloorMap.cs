@@ -203,6 +203,7 @@ namespace BuildBuy {
             box.transform.localScale = new Vector3(width, heights.y, length);
             box.transform.localPosition = new Vector3(x, heights.x + (heights.y * 0.5f), z);
             box.transform.parent = walls.transform;
+            box.GetComponent<MeshRenderer>().material = BuildRegistries.Mats.DefaultWall.Mat;
             box.name = "Wall Segment";
             return box;
        }
@@ -213,6 +214,11 @@ namespace BuildBuy {
             box.transform.localScale = new Vector3(width, 0.1f, length);
             box.transform.localPosition = new Vector3(x, heights.x - 0.049f, z);
             box.transform.parent = floors.transform;
+            if(level < 1) {
+                box.GetComponent<MeshRenderer>().material = BuildRegistries.Mats.DefaultFloor1.Mat;
+            } else {
+                box.GetComponent<MeshRenderer>().material = BuildRegistries.Mats.DefaultFloor1.Mat;
+            }
             box.name = "Floor Section";
             return box;
         }

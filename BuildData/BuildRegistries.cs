@@ -8,10 +8,11 @@ namespace BuildBuy {
     /// A storehouse for things like materials that are used in many places
     /// </summary>
     public class BuildRegistries : MonoBehaviour {
-        public static SurfaceMatRegistry mats;
+        private static SurfaceMatRegistry mats;
+
         [SerializeField] SurfaceMatRegistry materials;
 
-
+        public static SurfaceMatRegistry Mats => mats;
 
         void Awake() {
             // Make the current globally available material palette that of the current painter

@@ -86,6 +86,7 @@ namespace BuildBuy {
         }
 
 
+        // This is probably not needed as Vector3.RoundToInt() does what I want after all.
         public static Vector3 RoundV3(Vector3 vector) {
             return new Vector3(Mathf.RoundToInt(vector.x), Mathf.RoundToInt(vector.y), Mathf.RoundToInt(vector.z));
         }
