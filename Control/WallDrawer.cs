@@ -252,11 +252,16 @@ namespace BuildBuy {
                     Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
                     Vector2Int c1 = new Vector2Int(starting.x, ending.y);
                     Vector2Int c2 = new Vector2Int(ending.x, starting.y);
-                    DrawOneWall(starting, c1, p);
-                    DrawOneWall(starting, c2, p);
-                    DrawOneWall(c1, ending, p);
-                    DrawOneWall(c2, ending, p);
-                    floor.EndDrawing(hit, p);
+                    if(p.eraseMode) {
+                        Change change = new Change(BuildPiece.ALL, BuildOp.REMOVE, 0, starting, ending, p.story);
+                        p.lotMap.Stories[p.story].AddComponent(change);
+                    } else {
+                        DrawOneWall(starting, c1, p);
+                        DrawOneWall(starting, c2, p);
+                        DrawOneWall(c1, ending, p);
+                        DrawOneWall(c2, ending, p);
+                        floor.EndDrawing(hit, p);
+                    }
                 }
                 p.drawing = false;
                 p.controller.SetAAlignMode(false, p.endPoint);

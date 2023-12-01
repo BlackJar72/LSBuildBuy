@@ -4,6 +4,7 @@ namespace BuildBuy {
 
     [System.Serializable]
     public enum BuildPiece {
+        ALL,
         WALL,
         FLOOR,
         CEILING

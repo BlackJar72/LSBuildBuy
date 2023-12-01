@@ -227,6 +227,9 @@ namespace BuildBuy {
         public void AddComponent(Change change) {
             if(change.operation == BuildOp.ADD) {
                 switch (change.type) {
+                    case BuildPiece.ALL:
+                        Debug.LogError("ERROR! ADD should not be used with ALL");
+                        break;
                     case BuildPiece.WALL:
                         SetWall(change, 1);
                         break;
@@ -244,6 +247,9 @@ namespace BuildBuy {
                 }
             } else { //TODO!!!
                 switch (change.type) {
+                    case BuildPiece.ALL:
+                        EraseArea(change);
+                        break;
                     case BuildPiece.WALL:
                         SetWall(change, 0);
                         break;
@@ -261,6 +267,36 @@ namespace BuildBuy {
                 }
             }
             Redraw();
+        }
+
+
+        private void EraseArea(Change change) {
+            if(change.start.x < change.end.x) {
+                if(change.start.y < change.end.y) {
+                    EraseAreaHelper(change.start.x, change.end.x, change.start.y, change.end.y);
+                } else {
+                    EraseAreaHelper(change.start.x, change.end.x, change.end.y, change.start.y);
+                }
+            } else {
+                if(change.start.y < change.end.y) {
+                    EraseAreaHelper(change.end.x, change.start.x, change.start.y, change.end.y);
+                } else {
+                    EraseAreaHelper(change.end.x, change.start.x, change.end.y, change.start.y);
+                }
+            }
+        }
+
+
+        private void EraseAreaHelper(int startx, int endx, int starty, int endy) {
+            for(int i = startx; i < endx; i++) {
+                for(int j = starty; j < endy; j++) {
+                    hWallData[i, j] = vWallData[i, j] = floorData[i, j] = 0;
+                }
+                hWallData[i, endy] = 0;
+            }
+            for(int j = starty; j < endy; j++) {
+                vWallData[endx, j] = 0;
+            }
         }
 
 
