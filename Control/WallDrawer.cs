@@ -44,6 +44,7 @@ namespace BuildBuy {
             ACameraControl.LeftMouseDown += StartDraw;
             ACameraControl.LeftMouseClick += CancelDraw;
             controller.SetLayerMask(groundMask);
+            visualizer.SetActive(true);
         }
 
 
@@ -52,6 +53,7 @@ namespace BuildBuy {
             ACameraControl.LeftMouseDown -= StartDraw;
             ACameraControl.LeftMouseClick -= CancelDraw;
             controller.CameraController.ResetLayerMask();
+            visualizer.SetActive(false);
         }
 
 
@@ -140,6 +142,7 @@ namespace BuildBuy {
 
 
         public void SetEraseMode(bool mode) {
+            if(mode != eraseMode) visualFlipper.Flip();
             eraseMode = mode;
         }
 

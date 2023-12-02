@@ -7,16 +7,21 @@ namespace BuildBuy {
     public class BuildController : MonoBehaviour {
         // FIXME / TODO: Replace this with the my simulation camera controller
         [SerializeField] Camera playerEye;
-        [SerializeField] GameObject visualRepresentation;
+
+        [SerializeField] GameObject pencil;
+        [SerializeField] GameObject paintbrush;
 
         [SerializeField] EventConverter eventConverter;
         [SerializeField] ModeSwitch modeSwitch;
         [SerializeField] ACameraControl cameraController;
+        [SerializeField] WallDrawer buildDrawer;
+        [SerializeField] SurfacePainter buildPainter;
 
         public Vector2 realPosition;
         public Vector2Int gridPosition;
 
         public LayerMask groundPlainMask;
+        private GameObject visualRepresentation;
 
         private Vector3? pointedAt;
         private Vector3 lastPointedAt;
@@ -34,9 +39,11 @@ namespace BuildBuy {
         // Start is called before the first frame update
         void Start() {
             // FIXME / TODO: Set this differently, and set transform based on this + story altitude
+            visualRepresentation = pencil;
             realPosition = new Vector2(transform.position.x, transform.position.z);
             gridPosition = new Vector2Int(Mathf.RoundToInt(realPosition.x), Mathf.RoundToInt(realPosition.y));
             visualRepresentation.SetActive(modeSwitch.CurrentMode.GetCursorLocation() != null);
+            SetDrawMode();
         }
 
 
@@ -44,6 +51,38 @@ namespace BuildBuy {
         void Update() {
             if (aalignMode) MoveAALign();
             else MoveNormal();
+        }
+
+
+        public void SetDrawMode() {
+            if(buildPainter.enabled) buildPainter.enabled = false;
+            if(!buildDrawer.enabled) buildDrawer.enabled = true;
+            visualRepresentation = pencil;
+            buildDrawer.SetEraseMode(false);
+        }
+
+
+        public void SetEraseMode() {
+            if(buildPainter.enabled) buildPainter.enabled = false;
+            if(!buildDrawer.enabled) buildDrawer.enabled = true;
+            visualRepresentation = pencil;
+            buildDrawer.SetEraseMode(true);
+        }
+
+
+        public void SetPaintMode(int mode) {
+            if(!buildPainter.enabled) buildPainter.enabled = true;
+            if(buildDrawer.enabled) buildDrawer.enabled = false;
+            visualRepresentation = paintbrush;
+            // TODO
+        }
+
+
+        public void SetDrawingMode(int mode) {
+            if(buildPainter.enabled) buildPainter.enabled = false;
+            if(!buildDrawer.enabled) buildDrawer.enabled = true;
+            visualRepresentation = pencil;
+            buildDrawer.SetBuildMode(mode);
         }
 
 
