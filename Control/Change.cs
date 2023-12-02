@@ -44,11 +44,6 @@ namespace BuildBuy {
         }
 
 
-        public void Apply() {
-            // TODO: Apply changes here
-        }
-
-
         public override string ToString() {
             return "[" + type.ToString() + ", " + operation.ToString() + ", " + variant + ", " + start.ToString() + ", "
                    + end.ToString() + ", " + level + "]";

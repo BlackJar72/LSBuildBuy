@@ -12,6 +12,11 @@ namespace BuildBuy {
         public Material Mat => material;
         public string Name => name;
         public SurfaceType Surface => surfaceType;
+
+
+        public static bool operator ==(BuildMaterial a, BuildMaterial b) => a == b;
+        public static bool operator !=(BuildMaterial a, BuildMaterial b) => a != b;
+        public override bool Equals(object? other) => ((other is BuildMaterial) && (other == this));
     }
 
 
@@ -21,5 +26,6 @@ namespace BuildBuy {
         Floor = 2,
         Ceiling = 4
     }
+
 
 }

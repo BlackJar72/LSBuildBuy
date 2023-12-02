@@ -93,7 +93,9 @@ namespace BuildBuy {
 
 
         public void StartDraw(RaycastHit hit) {
-            draws[currentDraw].StartDraw(hit, this);
+            if(visualizer.activeSelf && lotMap.IsInMap(hit.point.RoundToInt())) {
+                draws[currentDraw].StartDraw(hit, this);
+            }
         }
 
 
@@ -103,7 +105,11 @@ namespace BuildBuy {
 
 
         public void EndDrawing(RaycastHit hit) {
-            draws[currentDraw].EndDrawing(hit, this);
+            if (visualizer.activeSelf && drawing && lotMap.IsInMap(visualizer.transform.position)) {
+                draws[currentDraw].EndDrawing(hit, this);
+            } else CancelDraw(hit);
+            drawing = false;
+            controller.SetAAlignMode(false, endPoint);
         }
 
 
@@ -138,6 +144,9 @@ namespace BuildBuy {
         }
 
 
+
+
+        #region Draw Actions
         /**************************************************************************************************************/
         /*                              DRAW ACTIONS                                                                  */
         /**************************************************************************************************************/
@@ -163,12 +172,10 @@ namespace BuildBuy {
             }
 
             public virtual void StartDraw(RaycastHit hit, WallDrawer p) {
-                if(p.lotMap.IsInMap(hit.point.RoundToInt())) {
-                    p.drawing = true;
-                    p.startPoint = RoundV3(hit.point);
-                    p.selectedObject = p.controller.CameraController.GetCursorObject();
-                    p.controller.SetAAlignMode(true, p.startPoint);
-                }
+                p.drawing = true;
+                p.startPoint = RoundV3(hit.point);
+                p.selectedObject = p.controller.CameraController.GetCursorObject();
+                p.controller.SetAAlignMode(true, p.startPoint);
             }
 
             public virtual void CancelDraw(RaycastHit hit, WallDrawer p) {
@@ -196,12 +203,10 @@ namespace BuildBuy {
             }
 
             public virtual void StartDraw(RaycastHit hit, WallDrawer p) {
-                if (p.lotMap.IsInMap(hit.point.RoundToInt())) {
-                    p.drawing = true;
-                    p.startPoint = RoundV3(hit.point);
-                    p.selectedObject = p.controller.CameraController.GetCursorObject();
-                    p.controller.SetAAlignMode(false, p.startPoint);
-                }
+                p.drawing = true;
+                p.startPoint = RoundV3(hit.point);
+                p.selectedObject = p.controller.CameraController.GetCursorObject();
+                p.controller.SetAAlignMode(false, p.startPoint);
             }
 
             public virtual void CancelDraw(RaycastHit hit, WallDrawer p) {
@@ -224,51 +229,9 @@ namespace BuildBuy {
         /// </summary>
         private class DrawWall : ADrawLinear {
             public override void EndDrawing(RaycastHit hit, WallDrawer p) {
-                if (p.drawing && p.lotMap.IsInMap(p.visualizer.transform.position)) {
-                    p.endPoint = p.visualizer.transform.position;
-                    Vector2Int starting = p.lotMap.GridPosFromWorldPos(p.startPoint);
-                    Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
-                    Change change;
-                    if(p.eraseMode) {
-                        change = new Change(BuildPiece.WALL, BuildOp.REMOVE, 0, starting, ending, p.story);
-                    } else {
-                        change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.story);
-                    }
-                    //Debug.Log(change.ToString());
-                    p.lotMap.Stories[p.story].AddComponent(change);
-                }
-                p.drawing = false;
-                p.controller.SetAAlignMode(false, p.endPoint);
-            }
-        }
-
-
-        private class DrawRoom : ADrawArea {
-            private DrawFloor floor = new DrawFloor();
-            public override void EndDrawing(RaycastHit hit, WallDrawer p) {
-                if (p.drawing && p.lotMap.IsInMap(p.visualizer.transform.position)) {
-                    p.endPoint = p.visualizer.transform.position;
-                    Vector2Int starting = p.lotMap.GridPosFromWorldPos(p.startPoint);
-                    Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
-                    Vector2Int c1 = new Vector2Int(starting.x, ending.y);
-                    Vector2Int c2 = new Vector2Int(ending.x, starting.y);
-                    if(p.eraseMode) {
-                        Change change = new Change(BuildPiece.ALL, BuildOp.REMOVE, 0, starting, ending, p.story);
-                        p.lotMap.Stories[p.story].AddComponent(change);
-                    } else {
-                        DrawOneWall(starting, c1, p);
-                        DrawOneWall(starting, c2, p);
-                        DrawOneWall(c1, ending, p);
-                        DrawOneWall(c2, ending, p);
-                        floor.EndDrawing(hit, p);
-                    }
-                }
-                p.drawing = false;
-                p.controller.SetAAlignMode(false, p.endPoint);
-            }
-
-
-            private void DrawOneWall(Vector2Int starting, Vector2Int ending, WallDrawer p) {
+                p.endPoint = p.visualizer.transform.position;
+                Vector2Int starting = p.lotMap.GridPosFromWorldPos(p.startPoint);
+                Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
                 Change change;
                 if(p.eraseMode) {
                     change = new Change(BuildPiece.WALL, BuildOp.REMOVE, 0, starting, ending, p.story);
@@ -281,26 +244,51 @@ namespace BuildBuy {
         }
 
 
-        private class DrawFloor : ADrawArea {
+        private class DrawRoom : ADrawArea {
+            private DrawFloor floor = new DrawFloor();
+
             public override void EndDrawing(RaycastHit hit, WallDrawer p) {
-                if (p.drawing && p.lotMap.IsInMap(p.visualizer.transform.position)) {
-                    p.endPoint = p.visualizer.transform.position;
-                    Vector2Int starting = p.lotMap.GridPosFromWorldPos(p.startPoint);
-                    Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
-                    Change change;
-                    if(p.eraseMode) {
-                        change = new Change(BuildPiece.FLOOR, BuildOp.REMOVE, 0, starting, ending, p.story);
-                    } else {
-                        change = new Change(BuildPiece.FLOOR, BuildOp.ADD, 0, starting, ending, p.story);
-                    }
-                    //Debug.Log(change.ToString());
+                p.endPoint = p.visualizer.transform.position;
+                Vector2Int starting = p.lotMap.GridPosFromWorldPos(p.startPoint);
+                Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
+                Vector2Int c1 = new Vector2Int(starting.x, ending.y);
+                Vector2Int c2 = new Vector2Int(ending.x, starting.y);
+                if (p.eraseMode) {
+                    Change change = new Change(BuildPiece.ALL, BuildOp.REMOVE, 0, starting, ending, p.story);
                     p.lotMap.Stories[p.story].AddComponent(change);
+                } else {
+                    DrawOneWall(starting, c1, p);
+                    DrawOneWall(starting, c2, p);
+                    DrawOneWall(c1, ending, p);
+                    DrawOneWall(c2, ending, p);
+                    floor.EndDrawing(hit, p);
                 }
-                p.drawing = false;
-                p.controller.SetAAlignMode(false, p.endPoint);
+            }
+
+            private void DrawOneWall(Vector2Int starting, Vector2Int ending, WallDrawer p) {
+                Change change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.story);
+                p.lotMap.Stories[p.story].AddComponent(change);
             }
         }
 
+
+        private class DrawFloor : ADrawArea {
+            public override void EndDrawing(RaycastHit hit, WallDrawer p) {
+                p.endPoint = p.visualizer.transform.position;
+                Vector2Int starting = p.lotMap.GridPosFromWorldPos(p.startPoint);
+                Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
+                Change change;
+                if(p.eraseMode) {
+                    change = new Change(BuildPiece.FLOOR, BuildOp.REMOVE, 0, starting, ending, p.story);
+                } else {
+                    change = new Change(BuildPiece.FLOOR, BuildOp.ADD, 0, starting, ending, p.story);
+                }
+                //Debug.Log(change.ToString());
+                p.lotMap.Stories[p.story].AddComponent(change);
+            }
+        }
+
+        #endregion
 
     }
 
