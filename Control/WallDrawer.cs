@@ -31,8 +31,8 @@ namespace BuildBuy {
 
         void Awake() {
             draws = new IDrawAction[3];
-            draws[0] = new DrawWall();
-            draws[1] = new DrawRoom();
+            draws[0] = new DrawRoom();
+            draws[1] = new DrawWall();
             draws[2] = new DrawFloor();
         }
 
@@ -73,7 +73,7 @@ namespace BuildBuy {
             this.lotMap = lot;
             visualizer.transform.position = transform.position = start = end = location.position;
             visualizer.transform.rotation = transform.rotation = Quaternion.identity;
-            visualizer.transform.localScale .Set(thickness, lot.Stories[story].heights.y, thickness); // FIXME
+            visualizer.transform.localScale.Set(thickness, lot.Stories[story].heights.y, thickness); // FIXME
         }
 
 
