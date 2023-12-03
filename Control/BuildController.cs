@@ -17,10 +17,12 @@ namespace BuildBuy {
         [SerializeField] WallDrawer buildDrawer;
         [SerializeField] SurfacePainter buildPainter;
 
-        public Vector2 realPosition;
-        public Vector2Int gridPosition;
+        [SerializeField] LayerMask groundPlainMask;
 
-        public LayerMask groundPlainMask;
+        [SerializeField] List<ButtonToggler> mainModeButtons;
+
+        private Vector2 realPosition;
+        private Vector2Int gridPosition;
         private GameObject visualRepresentation;
 
         private Vector3? pointedAt;
@@ -28,7 +30,7 @@ namespace BuildBuy {
         private bool beActive = false, wasActive = false;
 
         private bool aalignMode = false;
-        public Vector3 selectedStart;
+        private Vector3 selectedStart;
 
         public Vector3 LastPointedAt => lastPointedAt;
 
@@ -59,6 +61,7 @@ namespace BuildBuy {
             if(!buildDrawer.enabled) buildDrawer.enabled = true;
             visualRepresentation = pencil;
             buildDrawer.SetEraseMode(false);
+            SetSelectedButton(0);
         }
 
 
@@ -67,6 +70,7 @@ namespace BuildBuy {
             if(!buildDrawer.enabled) buildDrawer.enabled = true;
             visualRepresentation = pencil;
             buildDrawer.SetEraseMode(true);
+            SetSelectedButton(1);
         }
 
 
@@ -74,6 +78,7 @@ namespace BuildBuy {
             if(!buildPainter.enabled) buildPainter.enabled = true;
             if(buildDrawer.enabled) buildDrawer.enabled = false;
             visualRepresentation = paintbrush;
+            SetSelectedButton(2);
             // TODO
         }
 
@@ -148,6 +153,15 @@ namespace BuildBuy {
         public void SetLayerMask(LayerMask mask) {
             cameraController.SetLayerMask(mask);
         }
+
+
+        public void SetSelectedButton(int button) {
+            for(int i = 0; i < mainModeButtons.Count; i++) {
+                if(i == button) mainModeButtons[i].SetSelected();
+                else mainModeButtons[i].SetUnselected();
+            }
+        }
+
     }
 
 }

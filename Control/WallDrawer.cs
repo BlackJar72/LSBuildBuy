@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using kfutils;
 using SimCam;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace BuildBuy {
         [SerializeField] BuildController controller;
 
         [SerializeField] LayerMask groundMask;
+
+        [SerializeField] List<ButtonToggler> drawModeButtons;
 
         const float thickness = 0.1f;
         const float toEdge = thickness * 0.5f;
@@ -138,12 +141,21 @@ namespace BuildBuy {
 
         public void SetBuildMode(int mode) {
             currentDraw = mode;
+            SetSelectedButton(mode);
         }
 
 
         public void SetEraseMode(bool mode) {
             if(mode != eraseMode) visualFlipper.Flip();
             eraseMode = mode;
+        }
+
+
+        public void SetSelectedButton(int button) {
+            for(int i = 0; i < drawModeButtons.Count; i++) {
+                if(i == button) drawModeButtons[i].SetSelected();
+                else drawModeButtons[i].SetUnselected();
+            }
         }
 
 
