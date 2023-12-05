@@ -10,7 +10,6 @@ namespace BuildBuy {
         public Vector3 end;
         public Lot lot;
         public LotMap lotMap;
-        public int story;
 
         [SerializeField] GameObject visualizer;
         [SerializeField] Pencil visualFlipper;
@@ -60,23 +59,14 @@ namespace BuildBuy {
         }
 
 
-        void Update() {
-            if(Input.GetKeyUp(KeyCode.T)) {
-                ToggleEraseMode();
-            }
-            if(Input.GetKeyUp(KeyCode.F)) {
-                currentDraw = (currentDraw + 1) % draws.Length;
-                draws[currentDraw].OnSelected(this);
-            }
-        }
+        void Update() {}
 
 
-        public void PlaceAtLocation(Transform location, LotMap lot, int story) {
-            this.story = story;
+        public void PlaceAtLocation(Transform location, LotMap lot) {
             this.lotMap = lot;
             visualizer.transform.position = transform.position = start = end = location.position;
             visualizer.transform.rotation = transform.rotation = Quaternion.identity;
-            visualizer.transform.localScale.Set(thickness, lot.Stories[story].heights.y, thickness); // FIXME
+            visualizer.transform.localScale.Set(thickness, lot.Stories[lot.CurStory].heights.y, thickness); // FIXME
         }
 
 
@@ -249,12 +239,12 @@ namespace BuildBuy {
                 Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
                 Change change;
                 if(p.eraseMode) {
-                    change = new Change(BuildPiece.WALL, BuildOp.REMOVE, 0, starting, ending, p.story);
+                    change = new Change(BuildPiece.WALL, BuildOp.REMOVE, 0, starting, ending, p.lotMap.CurStory);
                 } else {
-                    change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.story);
+                    change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.lotMap.CurStory);
                 }
                 //Debug.Log(change.ToString());
-                p.lotMap.Stories[p.story].AddComponent(change);
+                p.lotMap.Stories[p.lotMap.CurStory].AddComponent(change);
             }
         }
 
@@ -269,8 +259,8 @@ namespace BuildBuy {
                 Vector2Int c1 = new Vector2Int(starting.x, ending.y);
                 Vector2Int c2 = new Vector2Int(ending.x, starting.y);
                 if (p.eraseMode) {
-                    Change change = new Change(BuildPiece.ALL, BuildOp.REMOVE, 0, starting, ending, p.story);
-                    p.lotMap.Stories[p.story].AddComponent(change);
+                    Change change = new Change(BuildPiece.ALL, BuildOp.REMOVE, 0, starting, ending, p.lotMap.CurStory);
+                    p.lotMap.Stories[p.lotMap.CurStory].AddComponent(change);
                 } else {
                     DrawOneWall(starting, c1, p);
                     DrawOneWall(starting, c2, p);
@@ -281,8 +271,8 @@ namespace BuildBuy {
             }
 
             private void DrawOneWall(Vector2Int starting, Vector2Int ending, WallDrawer p) {
-                Change change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.story);
-                p.lotMap.Stories[p.story].AddComponent(change);
+                Change change = new Change(BuildPiece.WALL, BuildOp.ADD, 0, starting, ending, p.lotMap.CurStory);
+                p.lotMap.Stories[p.lotMap.CurStory].AddComponent(change);
             }
         }
 
@@ -294,12 +284,12 @@ namespace BuildBuy {
                 Vector2Int ending = p.lotMap.GridPosFromWorldPos(p.endPoint);
                 Change change;
                 if(p.eraseMode) {
-                    change = new Change(BuildPiece.FLOOR, BuildOp.REMOVE, 0, starting, ending, p.story);
+                    change = new Change(BuildPiece.FLOOR, BuildOp.REMOVE, 0, starting, ending, p.lotMap.CurStory);
                 } else {
-                    change = new Change(BuildPiece.FLOOR, BuildOp.ADD, 0, starting, ending, p.story);
+                    change = new Change(BuildPiece.FLOOR, BuildOp.ADD, 0, starting, ending, p.lotMap.CurStory);
                 }
                 //Debug.Log(change.ToString());
-                p.lotMap.Stories[p.story].AddComponent(change);
+                p.lotMap.Stories[p.lotMap.CurStory].AddComponent(change);
             }
         }
 

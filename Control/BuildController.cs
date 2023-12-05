@@ -8,6 +8,9 @@ namespace BuildBuy {
         // FIXME / TODO: Replace this with the my simulation camera controller
         [SerializeField] Camera playerEye;
 
+        [SerializeField] Lot lot;
+        [SerializeField] LotMap lotMap;
+
         [SerializeField] GameObject pencil;
         [SerializeField] GameObject paintbrush;
 

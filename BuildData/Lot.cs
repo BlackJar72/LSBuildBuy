@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using SimCam;
 
 
 namespace BuildBuy {
 
     public class Lot : MonoBehaviour {
+        public const float STORY_HEIGHT = 3.0f;
+
         [SerializeField] public int width;
         [SerializeField] public int depth;
         [SerializeField] public LotMap buildMap;
@@ -18,6 +21,8 @@ namespace BuildBuy {
         private GameObject gridContainer;
 
         public LayerMask GroudMask => groundMask;
+        public GameObject BuidPlain => buildPlane;
+
         public bool shortWallView = false;
 
         void Awake() {
@@ -40,6 +45,16 @@ namespace BuildBuy {
         }
 
 
+        void OnEnable() {
+            ACameraControl.LevelChanged += OnLevelChange;
+        }
+
+
+        void OnDisable() {
+            ACameraControl.LevelChanged -= OnLevelChange;
+        }
+
+
         private void MakeGrid() {
             grid = new GameObject[width - 1, depth - 1];
             for(int i = 0; i < width - 1; i++)
@@ -47,6 +62,15 @@ namespace BuildBuy {
                     grid[i,j] = GameObject.Instantiate(gridSquare, gridContainer.transform);
                     grid[i,j].transform.localPosition = new Vector3(i - (width / 2) + 0.5f, 0.0015f, j - (depth / 2) + 0.5f);
                 }
+        }
+
+
+        public void OnLevelChange(int level) {
+            level = Mathf.Min(level, buildMap.NumStories);
+            Vector3 newPos = gridContainer.transform.localPosition;
+            newPos.y = STORY_HEIGHT * level;
+            gridContainer.transform.localPosition = newPos;
+            buildMap.SetStory(level);
         }
 
 

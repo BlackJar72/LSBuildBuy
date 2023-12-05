@@ -8,13 +8,23 @@ namespace BuildBuy {
     public class LotMap  {
         private List<FloorMap> stories;
 
-        [SerializeField] public Vector3 location;
-        [SerializeField] public int width;
-        [SerializeField] public int depth;
+        [SerializeField] Vector3 location;
+        [SerializeField] int width;
+        [SerializeField] int depth;
+        [SerializeField][Min(1)] int numStories = 5;
 
         public List<FloorMap> Stories => stories;
 
         private Lot lot;
+        private int currentStory = 0;
+
+        public Vector3 Location => location;
+        public int Width => width;
+        public int Depth => depth;
+        public int NumStories => numStories;
+
+        public int CurStory => currentStory;
+
 
         public LotMap(Vector3 position, int xsize, int zsize, Lot parent) {
             stories = new List<FloorMap>();
@@ -22,7 +32,7 @@ namespace BuildBuy {
             width = xsize;
             depth = zsize;
             lot = parent;
-            AddStory();
+            for(int i = 0; i < numStories; i++) AddStory();
         }
 
 
@@ -45,7 +55,7 @@ namespace BuildBuy {
             int level = stories.Count;
             FloorMap map;
             if(level == 0) {
-                map = new FloorMap(location, width, depth, location.y, height, lot, 1);
+                map = new FloorMap(location, width, depth, location.y, height, lot, 0);
             } else {
                 FloorMap last = Stories[Stories.Count - 1];
                 float altitude = last.heights.x + last.heights.y;
@@ -53,6 +63,12 @@ namespace BuildBuy {
             }
             Stories.Add(map);
         }
+
+
+        public void SetStory(int level) {
+            currentStory = Mathf.Clamp(level, 0, numStories);
+        }
+
 
     }
 }

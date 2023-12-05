@@ -15,7 +15,9 @@ namespace BuildBuy {
     [System.Serializable]
     public enum BuildOp {
         ADD,
-        REMOVE
+        REMOVE,
+        PAINT,
+        PAINT_FILL
     }
 
 

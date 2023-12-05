@@ -217,7 +217,7 @@ namespace BuildBuy {
             if(level < 1) {
                 box.GetComponent<MeshRenderer>().material = BuildRegistries.Mats.DefaultFloor1.Mat;
             } else {
-                box.GetComponent<MeshRenderer>().material = BuildRegistries.Mats.DefaultFloor1.Mat;
+                box.GetComponent<MeshRenderer>().material = BuildRegistries.Mats.DefaultFloor2.Mat;
             }
             box.name = "Floor Section";
             return box;
@@ -231,7 +231,7 @@ namespace BuildBuy {
                         Debug.LogError("ERROR! ADD should not be used with ALL");
                         break;
                     case BuildPiece.WALL:
-                        SetWall(change, 1);
+                        AddWall(change);
                         break;
                     case BuildPiece.FLOOR:
                         SetFloor(change, 1);
@@ -296,6 +296,32 @@ namespace BuildBuy {
             }
             for(int j = starty; j < endy; j++) {
                 vWallData[endx, j] = 0;
+            }
+        }
+
+
+
+        private void AddWall(Change change) {
+            if(change.start.x == change.end.x) { // Drawing along he Z axis
+                if(change.start.y < change.end.y) {
+                    for (int i = change.start.y; i < change.end.y; i++) {
+                        vWallData[change.start.x, i] = Mathf.Max(1, vWallData[change.start.x, i]);
+                    }
+                } else {
+                    for (int i = change.end.y; i < change.start.y; i++) {
+                        vWallData[change.start.x, i] = Mathf.Max(1, vWallData[change.start.x, i]);
+                    }
+                }
+            } else {
+                if(change.start.x < change.end.x) {
+                    for (int i = change.start.x; i < change.end.x; i++) {
+                        hWallData[i, change.start.y] = Mathf.Max(1, vWallData[change.start.x, i]);
+                    }
+                } else {
+                    for (int i = change.end.x; i < change.start.x; i++) {
+                        hWallData[i, change.start.y] = Mathf.Max(1, vWallData[change.start.x, i]);
+                    }
+                }
             }
         }
 
