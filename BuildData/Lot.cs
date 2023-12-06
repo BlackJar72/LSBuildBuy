@@ -11,6 +11,7 @@ namespace BuildBuy {
 
         [SerializeField] public int width;
         [SerializeField] public int depth;
+        [SerializeField][Min(1)] int numStories;
         [SerializeField] public LotMap buildMap;
         [SerializeField] GameObject gridSquare;
         [SerializeField] GameObject lotPlane;
@@ -33,7 +34,7 @@ namespace BuildBuy {
             gridContainer.name = "Grid";
             location.x -= (width / 2);
             location.z -= (depth / 2);
-            buildMap = new LotMap(location, width, depth, this);
+            buildMap = new LotMap(location, width, depth, numStories, this);
         }
 
 
@@ -66,7 +67,7 @@ namespace BuildBuy {
 
 
         public void OnLevelChange(int level) {
-            level = Mathf.Min(level, buildMap.NumStories);
+            level = Mathf.Clamp(level, 0, buildMap.NumStories - 1);
             Vector3 newPos = gridContainer.transform.localPosition;
             newPos.y = STORY_HEIGHT * level;
             gridContainer.transform.localPosition = newPos;
