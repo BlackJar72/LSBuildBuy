@@ -4,74 +4,89 @@ using UnityEngine;
 
 namespace BuildBuy {
 
-    public class BuildItemRegistries {
-        private bool initialized = false;
-        public static List<BuildItem> walls = new List<BuildItem>();
-        public static List<BuildItem> corners = new List<BuildItem>();
-        public static List<BuildItem> tiles = new List<BuildItem>();
-        public static List<BuildItem> floorTiles = new List<BuildItem>();
-        public static List<BuildItem> ceilingTiles = new List<BuildItem>();
 
-
-        public void init(BuildItemRegistry source) {
-            if(!initialized) {
-                source.CopyWalls(walls);
-                source.CopyWCorners(corners);
-                source.CopyTiles(tiles);
-                source.CopyFloorTiles(floorTiles);
-                source.CopyCeilingTiles(ceilingTiles);
-                initialized = true;
-            }
-        }
-    }
-
-
-    ///
-    /// This to act as an in-editor initialization file, that is, as a place to put BuildItems which are also
-    /// created in the editor.  There should really normally be only one of these, attatched to a and called by
-    /// a loading manager in the start scene, from which is should be run once.
-    ///
     [CreateAssetMenu(menuName = "Build Buy/Build Item Registry", fileName = "BuildItemRegistry", order = 210)]
     public class BuildItemRegistry : ScriptableObject {
-        [SerializeField] List<BuildItem> walls;
-        [SerializeField] List<BuildItem> corners;
-        [SerializeField] List<BuildItem> tiles;
+        private bool initialized = false;
+
+        private static List<BuildItem> walls;
+        private static List<BuildItem> corners;
+        private static List<BuildItem> tiles;
+        private static List<BuildItem> floors;
+        private static List<BuildItem> ceilings;
+        private static List<BuildItem> decor;
+
+        [SerializeField] List<BuildItem> wallsSections;
+        [SerializeField] List<BuildItem> cornerObjects;
+        [SerializeField] List<BuildItem> tileObjects;
         [SerializeField] List<BuildItem> floorTiles;
         [SerializeField] List<BuildItem> ceilingTiles;
+        [SerializeField] List<BuildItem> furniture;
 
-        public void CopyWalls(List<BuildItem> global) {
-            for(int i = 0; i < walls.Count; i++) global[i] = walls[i];
-            for(int i = 0; i < global.Count; i++) {
-                if(global[i] != null) global[i].SetID(i);
-            }
+        public List<BuildItem> Walls => walls;
+        public List<BuildItem> Corners => corners;
+        public List<BuildItem> Tiles => tiles;
+        public List<BuildItem> Floors => floors;
+        public List<BuildItem> Ceilings => ceilings;
+        public List<BuildItem> Decor => decor;
+
+        //Converting ID to index, where ID 0 = nothings, so real objects start at 1
+        public BuildItem wall(int i) => walls[i - 1];
+        public BuildItem corner(int i) => corners[i - 1];
+        public BuildItem tile(int i) => tiles[i - 1];
+        public BuildItem floor(int i) => floors[i - 1];
+        public BuildItem ceiling(int i) => ceilings[i - 1];
+        public BuildItem item(int i) => furniture[i];
+
+
+        void Awake() {
+            CopyWalls();
+            CopyWCorners();
+            CopyTiles();
+            CopyFloorTiles();
+            CopyCeilingTiles();
         }
 
-        public void CopyWCorners(List<BuildItem> global) {
-            for(int i = 0; i < corners.Count; i++) global[i] = corners[i];
-            for(int i = 0; i < global.Count; i++) {
-                if(global[i] != null) global[i].SetID(i);
+        private void CopyWalls() {
+            for(int i = 0; i < wallsSections.Count; i++) {
+                if(wallsSections[i] != null) wallsSections[i].SetID(i + 1);
             }
+            walls = wallsSections;
         }
 
-        public void CopyTiles(List<BuildItem> global) {
-            for(int i = 0; i < tiles.Count; i++) global[i] = tiles[i];
-            for(int i = 0; i < global.Count; i++) {
-                if(global[i] != null) global[i].SetID(i);
+        private void CopyWCorners() {
+            for(int i = 0; i < cornerObjects.Count; i++) {
+                if(cornerObjects[i] != null) cornerObjects[i].SetID(i + 1);
             }
+            corners = cornerObjects;
         }
 
-        public void CopyFloorTiles(List<BuildItem> global) {
-            for(int i = 0; i < floorTiles.Count; i++) global[i] = floorTiles[i];
-            for(int i = 0; i < global.Count; i++) {
-                if(global[i] != null) global[i].SetID(i);
+        private void CopyTiles() {
+            for(int i = 0; i < tileObjects.Count; i++) {
+                if(tileObjects[i] != null) tileObjects[i].SetID(i + 1);
             }
+            tiles = tileObjects;
         }
 
-        public void CopyCeilingTiles(List<BuildItem> global) {
-            for(int i = 0; i < ceilingTiles.Count; i++) global[i] = ceilingTiles[i];
-            for(int i = 0; i < global.Count; i++) {
-                if(global[i] != null) global[i].SetID(i);
+        private void CopyFloorTiles() {
+            for(int i = 0; i < floorTiles.Count; i++) {
+                if(floorTiles[i] != null) floorTiles[i].SetID(i + 1);
             }
+            floors = floorTiles;
+        }
+
+        private void CopyCeilingTiles() {;
+            for(int i = 0; i <ceilingTiles.Count; i++) {
+                if(ceilingTiles[i] != null) ceilingTiles[i].SetID(i + 1);
+            }
+            ceilings = ceilingTiles;
+        }
+
+        private void CopyFurnitureTiles() {;
+            for(int i = 0; i <furniture.Count; i++) {
+                if(furniture[i] != null) furniture[i].SetID(i + 1);
+            }
+            decor = furniture;
         }
     }
 }
