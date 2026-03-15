@@ -1,5 +1,7 @@
 # Build-Buy Prototype (early, never to be finished)
 
+## Do to the flurry of new age verification laws I do not have the infrastructure to comply with, I will not be making or working on videogames or any other standalone software applications. ##
+
 Part of an abandoned Life Simulation Game project, which was hoped (with varying degrees of modification) could be adapted for use with other types of 
 games such as RPGs or (in a more simplified and streamlined form) city builders.
 
